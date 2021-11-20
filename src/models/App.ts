@@ -7,7 +7,7 @@ import {
 } from '../Config';
 
 export type TStep = 'first' | 'second';
-export type TBoardStatus = 'open' | 'block';
+export type TBoardStatus = 'start' |'open' | 'block';
 export type TCardStatus = 'hide' | 'check' | 'open';
 
 export type TCard = {
@@ -18,7 +18,7 @@ export type TCard = {
 
 class App {
   @observable
-  boardStatus: TBoardStatus = 'block';
+  boardStatus: TBoardStatus = 'start';
   @observable
   cards?: TCard[];
   @observable
@@ -48,7 +48,7 @@ class App {
       })
     this.moves = 0;
     this._step = 'first';
-    this.boardStatus = 'block';
+    this.boardStatus = 'start';
     setTimeout(
       () => {
         this.cards = this.cards?.map(c => ({ ...c, status: 'hide' }));
