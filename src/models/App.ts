@@ -1,6 +1,6 @@
 import { makeObservable, observable, action } from 'mobx';
 import {
-  PRIME_NUMBER_END,
+  PRIME_NUMBER_END, PRIME_NUMBER_MAX_COUNT,
   PRIME_NUMBER_START,
   START_DELAY_MILLISECONDS,
   WRONG_DELAY_MILLISECONDS
@@ -102,6 +102,7 @@ class App {
     let i = PRIME_NUMBER_START
     while (i < PRIME_NUMBER_END) {
       if (isPrime(i)) numbers.push(i);
+      if (numbers.length >= PRIME_NUMBER_MAX_COUNT) break;
       i++
     }
     return numbers;
