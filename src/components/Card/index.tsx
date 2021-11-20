@@ -1,6 +1,6 @@
-import { app, TCard } from '../../models/App';
+import { app, ECardStatus, TCard } from '../../models/App';
 import { observer } from 'mobx-react-lite';
-import './index.css';
+import './index.scss';
 
 type Props = {
   model: TCard;
@@ -8,8 +8,13 @@ type Props = {
 
 const Card = observer((props: Props) => {
   const { model } = props;
-  const visibility = model.status === 'hide' ? 'hidden' : 'visible';
-  const classNames = `card ${model.status === 'check' ? 'check' : model.status === 'open' ? 'open' : undefined}`;
+  const opacity = model.status === 'hide' ? '0' : '1';
+  const classNames = `card${model.status === ECardStatus.CHECK 
+    ? ' check' 
+    : model.status === ECardStatus.OPEN 
+      ? ' open' 
+      : ''
+  }`;
 
   const handleClick = () => {
     app.cardClick(model);
@@ -17,7 +22,7 @@ const Card = observer((props: Props) => {
 
   return (
     <div className={classNames} onClick={handleClick}>
-      <h3 className={'label'} style={{ visibility }}>{model.label}</h3>
+      <h3 className={'label'} style={{ opacity }}>{model.label}</h3>
     </div>
   );
 });

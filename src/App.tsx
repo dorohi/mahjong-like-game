@@ -21,7 +21,7 @@ const App = observer(() => {
   return (
     <div className={'game'}>
       <h1 className={'header'}>Mahjong-like game</h1>
-      {app.cards && <Board/> }
+      <Board />
       <Footer />
     </div>
   );

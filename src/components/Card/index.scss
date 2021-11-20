@@ -1,3 +1,5 @@
+$transition: .3s;
+
 .card {
   display: flex;
   align-items: center;
@@ -8,10 +10,7 @@
   box-shadow: 0px 0px 4px 8px rgb(246, 246, 246);
   border-radius: 8px;
   cursor: pointer;
-}
-
-.label {
-  font-size: 32px;
+  transition: $transition;
 }
 
 .open {
@@ -22,3 +21,7 @@
   box-shadow: 0px 0px 4px 8px rgb(224, 223, 223);
 }
 
+.label {
+  font-size: 32px;
+  transition: $transition;
+}

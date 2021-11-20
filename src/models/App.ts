@@ -1,24 +1,38 @@
 import { makeObservable, observable, action } from 'mobx';
 import {
-  PRIME_NUMBER_END, PRIME_NUMBER_MAX_COUNT,
+  PRIME_NUMBER_END,
   PRIME_NUMBER_START,
+  PRIME_NUMBER_MAX_COUNT,
   START_DELAY_MILLISECONDS,
   WRONG_DELAY_MILLISECONDS
 } from '../Config';
 
-export type TStep = 'first' | 'second';
-export type TBoardStatus = 'start' |'open' | 'block';
-export type TCardStatus = 'hide' | 'check' | 'open';
+export enum EStep {
+  FIRST = 'first' ,
+  SECOND ='second',
+}
+
+export enum EBoardStatus {
+  START = 'start',
+  OPEN = 'open',
+  BLOCK = 'block',
+}
+export enum ECardStatus {
+  HIDE = 'hide',
+  CHECK = 'check',
+  OPEN = 'open',
+
+}
 
 export type TCard = {
   id: number,
   label: number,
-  status: TCardStatus;
+  status: ECardStatus;
 };
 
 class App {
   @observable
-  boardStatus: TBoardStatus = 'start';
+  boardStatus: EBoardStatus = EBoardStatus.START;
   @observable
   cards?: TCard[];
   @observable
@@ -26,14 +40,14 @@ class App {
   @observable
   moves: number = 0;
 
-  private _step: TStep = 'first';
+  private _step: EStep = EStep.FIRST;
 
   constructor() {
     makeObservable(this);
   }
 
   get step() { return this._step; }
-  set step(v: TStep) { this._step = v; }
+  set step(v: EStep) { this._step = v; }
 
   @action
   initNewGame = () => {
@@ -43,16 +57,16 @@ class App {
         return {
           id,
           label: number,
-          status: 'check'
+          status: ECardStatus.CHECK
         };
       })
     this.moves = 0;
-    this._step = 'first';
-    this.boardStatus = 'start';
+    this._step = EStep.FIRST;
+    this.boardStatus = EBoardStatus.START;
     setTimeout(
       () => {
-        this.cards = this.cards?.map(c => ({ ...c, status: 'hide' }));
-        this.boardStatus = 'open';
+        this.cards = this.cards?.map(c => ({ ...c, status: ECardStatus.HIDE }));
+        this.boardStatus = EBoardStatus.OPEN;
       },
       START_DELAY_MILLISECONDS
     )
@@ -61,32 +75,32 @@ class App {
   @action
   cardClick = (card: TCard) => {
     if (
-      this.boardStatus === 'block'        // Доска закрыта: старт игры когда показываются чиста или неудачный мув
-      || card.status === 'open'           // Клик по открытой карте
-      || card.id === this.checkedCard?.id // Клик по одной и той же карте
+      this.boardStatus !== EBoardStatus.OPEN  // Доска закрыта: старт игры когда показываются чиста или неудачный мув
+      || card.status === ECardStatus.OPEN      // Клик по открытой карте
+      || card.id === this.checkedCard?.id      // Клик по одной и той же карте
     ) return;
-    if (this.step === 'first') {
-      card.status = 'check';
+    if (this.step === EStep.FIRST) {
+      card.status = ECardStatus.CHECK;
       this.checkedCard = card;
-      this.step = 'second';
+      this.step = EStep.SECOND;
       this.moves++;
     } else {
       if (!this.checkedCard) return;
       if (this.checkedCard.label === card.label) {
-        card.status = this.checkedCard.status = 'open';
+        card.status = this.checkedCard.status = ECardStatus.OPEN;
       } else {
-        card.status = 'check';
-        this.boardStatus = 'block';
+        card.status = ECardStatus.CHECK;
+        this.boardStatus = EBoardStatus.BLOCK;
         setTimeout(
           () => {
             if (!this.checkedCard) return;
-            card.status = this.checkedCard.status = 'hide';
-            this.boardStatus = 'open';
+            card.status = this.checkedCard.status = ECardStatus.HIDE;
+            this.boardStatus = EBoardStatus.OPEN;
           },
           WRONG_DELAY_MILLISECONDS
         )
       }
-      this.step = 'first';
+      this.step = EStep.FIRST;
     }
   }
 
