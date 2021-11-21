@@ -51,15 +51,7 @@ class App {
 
   @action
   initNewGame = () => {
-    const primes = [...this.getPrimeNumbers(), ...this.getPrimeNumbers()];
-    this.cards = primes.sort(() => Math.random() - 0.5)
-      .map((number: number, id: number) => {
-        return {
-          id,
-          label: number,
-          status: ECardStatus.CHECK
-        };
-      })
+    this.cards = this.makePrimeNumbersPairs();
     this.moves = 0;
     this._step = EStep.FIRST;
     this.boardStatus = EBoardStatus.START;
@@ -102,6 +94,20 @@ class App {
       }
       this.step = EStep.FIRST;
     }
+  }
+
+  makePrimeNumbersPairs = () => {
+    const primes = this.getPrimeNumbers();
+    const primesPare = [...primes, ...primes];
+
+    return primesPare.sort(() => Math.random() - 0.5)
+      .map((number: number, id: number) => {
+        return {
+          id,
+          label: number,
+          status: ECardStatus.CHECK
+        };
+      });
   }
 
   getPrimeNumbers = () => {
