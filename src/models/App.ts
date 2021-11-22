@@ -36,18 +36,14 @@ class App {
   @observable
   cards?: TCard[];
   @observable
-  checkedCard?: TCard;
-  @observable
   moves: number = 0;
 
+  private checkedCard?: TCard;
   private _step: EStep = EStep.FIRST;
 
   constructor() {
     makeObservable(this);
   }
-
-  get step() { return this._step; }
-  set step(v: EStep) { this._step = v; }
 
   @action
   initNewGame = () => {
@@ -64,17 +60,49 @@ class App {
     )
   }
 
+  private makePrimeNumbersPairs = () => {
+    const primes = this.getPrimeNumbers();
+    const primesPare = [...primes, ...primes];
+
+    return primesPare.sort(() => Math.random() - 0.5)
+      .map((number: number, id: number) => {
+        return {
+          id,
+          label: number,
+          status: ECardStatus.CHECK
+        };
+      });
+  }
+
+  private getPrimeNumbers = () => {
+    const isPrime = (n: number) => {
+      if (n < 2) return false;
+      for (let i = 2; i <= Math.sqrt(n); i++) {
+        if (n % i === 0) return false;
+      }
+      return true;
+    }
+    const numbers: number[] = [];
+    let i = PRIME_NUMBER_START
+    while (i < PRIME_NUMBER_END) {
+      if (isPrime(i)) numbers.push(i);
+      if (numbers.length >= PRIME_NUMBER_MAX_COUNT) break;
+      i++
+    }
+    return numbers;
+  }
+
   @action
   cardClick = (card: TCard) => {
     if (
-      this.boardStatus !== EBoardStatus.OPEN  // Доска закрыта: старт игры когда показываются чиста или неудачный мув
+      this.boardStatus !== EBoardStatus.OPEN   // Доска закрыта: старт игры когда показываются чиста или неудачный мув
       || card.status === ECardStatus.OPEN      // Клик по открытой карте
       || card.id === this.checkedCard?.id      // Клик по одной и той же карте
     ) return;
-    if (this.step === EStep.FIRST) {
+    if (this._step === EStep.FIRST) {
       card.status = ECardStatus.CHECK;
       this.checkedCard = card;
-      this.step = EStep.SECOND;
+      this._step = EStep.SECOND;
       this.moves++;
     } else {
       if (!this.checkedCard) return;
@@ -92,40 +120,8 @@ class App {
           WRONG_DELAY_MILLISECONDS
         )
       }
-      this.step = EStep.FIRST;
+      this._step = EStep.FIRST;
     }
-  }
-
-  makePrimeNumbersPairs = () => {
-    const primes = this.getPrimeNumbers();
-    const primesPare = [...primes, ...primes];
-
-    return primesPare.sort(() => Math.random() - 0.5)
-      .map((number: number, id: number) => {
-        return {
-          id,
-          label: number,
-          status: ECardStatus.CHECK
-        };
-      });
-  }
-
-  getPrimeNumbers = () => {
-    const isPrime = (n: number) => {
-      if (n < 2) return false;
-      for (let i = 2; i <= Math.sqrt(n); i++) {
-        if (n % i === 0) return false;
-      }
-      return true;
-    }
-    const numbers: number[] = [];
-    let i = PRIME_NUMBER_START
-    while (i < PRIME_NUMBER_END) {
-      if (isPrime(i)) numbers.push(i);
-      if (numbers.length >= PRIME_NUMBER_MAX_COUNT) break;
-      i++
-    }
-    return numbers;
   }
 }
 
